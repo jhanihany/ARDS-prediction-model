@@ -1,29 +1,62 @@
-# ARDS Prediction Model
+# ARDS Prediction Model - Web Portfolio
 
-https://jhanihany.github.io/ARDS-prediction-model/
-
-해당링크에 접속하시면, 프로젝트의 전문을 확인하실 수 있습니다.
-
-## 프로젝트 소개
-
-본 프로젝트는 **IMEN 383 Health Systems Engineering** 수업을 수강하며 진행한 팀 프로젝트입니다. 중환자실 환자의 시계열 생체신호 데이터를 활용하여 **급성 호흡곤란 증후군(ARDS, Acute Respiratory Distress Syndrome)의 발생 위험을 사전에 예측하는 모델**을 구축하고, 머신러닝과 딥러닝 모델의 성능을 비교하는 것을 목표로 진행했습니다.
-
-본 프로젝트에서 저는 **ARDS 예측 모델링과 발표자료 제작**을 담당했습니다.
+IMEN 383 **Health Systems Engineering** 프로젝트 발표자료를 GitHub Pages에서 볼 수 있도록 스크롤형 웹 포트폴리오로 구성한 버전입니다.
 
 ## 프로젝트 개요
 
-총 **11,514명의 환자 데이터**를 대상으로 최소 48시간의 관찰 구간을 확보할 수 있도록 재원 기간이 2일 이상인 환자를 선정했습니다. 이후 Berlin Criteria를 데이터 환경에 맞게 적용하여 ARDS 발생 여부를 정의하고, 환자의 생체신호와 임상 데이터를 기반으로 **ARDS 발생 12시간 전 위험을 예측하는 이진 분류 문제**를 구성했습니다.
+ICU 시계열 데이터를 이용해 **향후 12시간 내 ARDS 발생 위험**을 예측하는 프로젝트입니다. 발표자료의 흐름을 그대로 유지하면서 웹에서는 다음 순서로 읽을 수 있도록 구성했습니다.
 
-데이터는 Train / Validation / Test를 **80% / 10% / 10%**로 분할했으며, 변수 특성에 따라 전처리 및 Min-Max Scaling을 수행했습니다. 모델링 단계에서는 XGBoost, LightGBM, Random Forest, Decision Tree, Logistic Regression, Naive Bayes 등 머신러닝 모델과 함께 **LSTM, Transformer** 기반 딥러닝 모델을 학습하고 성능을 비교했습니다.
+```text
+Overview
+  ↓
+Preprocessing
+  ↓
+Prediction Task
+  ↓
+Annotation & Labeling
+  ↓
+Model Design & Training
+  ↓
+Performance & Conclusion
+```
 
-## 주요 결과
+## 발표자료 기준 핵심 내용
 
-성능 비교 결과, **LSTM의 F1-Score가 0.867로 가장 높아 Precision과 Recall 간 가장 균형 잡힌 성능**을 보였습니다. ROC-AUC는 **Transformer가 0.949로 가장 높았고, LSTM 역시 0.941**로 유사하게 높은 예측력을 보였습니다.
+- Total cohort: 11,514 unique IDs
+- Observation window 확보를 위해 LOS ≥ 2 적용
+- Train / Valid / Test = 80% / 10% / 10%
+- ARDS 라벨 조건: `0 < PF Ratio <= 300` & `MechVent = 1`
+- 현재 시점으로부터 향후 12시간 내 조건 충족 여부를 `ards_next_12h`로 라벨링
+- Machine Learning: XGB, LGB, RF, DT, LR, NB
+- Deep Learning: LSTM, Transformer
+- 발표자료 결과: LSTM F1-Score 0.867, Transformer ROC-AUC 0.949
 
-특히 시계열 생체신호의 시간적 패턴을 직접 학습하는 딥러닝 모델이 XGBoost와 LightGBM을 포함한 머신러닝 모델보다 전반적으로 높은 F1-Score와 Sensitivity를 기록했습니다.
+## 파일 구조
 
-## 결론
+```text
+index.html
+style.css
+script.js
+original.pdf
+slides/
+  slide01.webp
+  ...
+  slide37.webp
+README.md
+```
 
-본 프로젝트를 통해 **환자의 시계열 생체신호에서 시간적 패턴을 학습하는 것이 ARDS 조기 예측에 중요한 요소**임을 확인했습니다. 특히 LSTM과 Transformer 기반 모델은 ARDS 발생 위험을 12시간 전에 탐지하는 데 높은 성능을 보여, 실제 임상 환경에서 조기 대응을 지원할 가능성을 확인할 수 있었습니다.
+## GitHub Pages 배포
 
-이러한 예측 모델은 고위험 환자를 사전에 선별함으로써 인공호흡기 적용이나 수액 조절과 같은 선제적 처치를 지원하고, 의료진과 장비 등 한정된 의료 자원을 고위험 환자에게 보다 효율적으로 배분하는 데 활용될 수 있습니다.
+저장소 루트에 위 파일들을 그대로 업로드한 뒤:
+
+1. `Settings`
+2. `Pages`
+3. `Deploy from a branch`
+4. Branch: `main`
+5. Folder: `/(root)`
+
+으로 설정하면 됩니다.
+
+## 참고
+
+이 웹페이지는 발표자료를 포트폴리오 형태로 재구성한 것으로, 모델 결과와 임상적 해석은 원 발표자료의 내용을 기준으로 표시합니다.
