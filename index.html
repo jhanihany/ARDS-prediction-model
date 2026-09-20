@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f0e3">
+  <meta name="description" content="MIMIC-IV ICU 시계열 데이터를 활용한 12시간 전 ARDS 발생 예측 프로젝트">
+  <title>ARDS Prediction Model</title>
+  <link rel="preload" as="image" href="assets/slides/slide01.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="progress" aria-hidden="true"><span id="progressFill"></span></div>
+
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="처음으로 이동">
+      <span class="brand-mark">+</span>
+      <span>HEALTH SYSTEMS ENGINEERING</span>
+    </a>
+    <nav class="chapter-nav" aria-label="프로젝트 섹션">
+      <a href="#preprocessing">Preprocessing</a>
+      <a href="#prediction">Prediction</a>
+      <a href="#labeling">Labeling</a>
+      <a href="#modeling">Modeling</a>
+      <a href="#results">Results</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-orb orb-a"></div>
+      <div class="hero-orb orb-b"></div>
+
+      <div class="hero-copy reveal">
+        <p class="eyebrow">IMEN 383 · Health Systems Engineering</p>
+        <h1>ARDS<br>Prediction Model</h1>
+        <p class="hero-sub">ICU 시계열 데이터를 기반으로 ARDS 발생을 12시간 전에 예측하는 머신러닝·딥러닝 프로젝트</p>
+        <div class="hero-metrics" aria-label="프로젝트 핵심 수치">
+          <div><strong>11,514</strong><span>cohort</span></div>
+          <div><strong>12h</strong><span>prediction window</span></div>
+          <div><strong>8</strong><span>models compared</span></div>
+        </div>
+        <a class="scroll-cta" href="#overview">프로젝트 보기 <span>↓</span></a>
+      </div>
+
+      <div class="hero-deck reveal delay-1">
+        <img src="assets/slides/slide01.png" alt="ARDS Prediction Model 발표자료 표지" fetchpriority="high">
+      </div>
+    </section>
+
+    <section id="overview" class="section-shell overview">
+      <div class="section-intro reveal">
+        <span class="section-index">00</span>
+        <div>
+          <p class="kicker">Overview</p>
+          <h2>의료 시계열 데이터에서<br>12시간 뒤 위험을 읽어내는 과정</h2>
+        </div>
+        <p class="section-copy">데이터 정제부터 임상 기준을 반영한 라벨링, ML·DL 모델 비교, 성능 해석까지 하나의 흐름으로 구성했습니다.</p>
+      </div>
+
+      <figure class="slide-card feature reveal">
+        <img src="assets/slides/slide02.png" alt="ARDS Prediction Model 프로젝트 목차">
+        <figcaption><span>Contents</span><strong>Preprocessing → Prediction → Labeling → Modeling → Performance</strong></figcaption>
+      </figure>
+    </section>
+
+    <section id="preprocessing" class="section-shell story-section">
+      <div class="chapter reveal">
+        <span class="chapter-no">01</span>
+        <div>
+          <p>Preprocessing</p>
+          <h2>분석 가능한 ICU 시계열 만들기</h2>
+        </div>
+        <p class="chapter-copy">11,514명의 코호트를 정의하고, 이상치와 결측치를 임상·도메인 기준에 맞춰 정제합니다.</p>
+      </div>
+
+      <div class="chapter-visual reveal"><img src="assets/slides/slide03.png" alt="Chapter 01 Preprocessing"></div>
+
+      <div class="slides-stack">
+        <figure class="slide-card reveal"><img src="assets/slides/slide04.png" alt="Cohort selection and data characteristics"><figcaption><span>01 · Preprocessing</span><strong>Cohort Selection & Data Characteristics</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide05.png" alt="Released dataframe analysis"><figcaption><span>01 · Preprocessing</span><strong>Released DF 구조와 변수 분포 확인</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide06.png" alt="Static and time variables"><figcaption><span>01 · Preprocessing</span><strong>Static Variable vs Time-Variable</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide07.png" alt="Static variables analysis"><figcaption><span>01 · Preprocessing</span><strong>정적 변수 분포 분석</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide08.png" alt="Dynamic variables frequency"><figcaption><span>01 · Preprocessing</span><strong>시계열 변수 측정 빈도 분석</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide09.png" alt="Outlier detection criteria"><figcaption><span>01 · Preprocessing</span><strong>도메인 지식 기반 이상치 기준</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide10.png" alt="Physiologically impossible values"><figcaption><span>01 · Preprocessing</span><strong>Physiologically Impossible Values</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide11.png" alt="Outlier removal comparison"><figcaption><span>01 · Preprocessing</span><strong>표준편차 기준 대신 도메인 기준 채택</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide12.png" alt="Missing value imputation"><figcaption><span>01 · Preprocessing</span><strong>Missing Value Imputation</strong></figcaption></figure>
+      </div>
+    </section>
+
+    <section id="prediction" class="section-shell story-section alt-bg">
+      <div class="chapter reveal">
+        <span class="chapter-no">02</span>
+        <div>
+          <p>Prediction Task</p>
+          <h2>무엇을, 왜 예측할 것인가</h2>
+        </div>
+        <p class="chapter-copy">ARDS의 임상적 의미와 예측 필요성을 정리하고, Berlin Criteria를 데이터셋에서 사용할 수 있는 수치 조건으로 변환합니다.</p>
+      </div>
+
+      <div class="chapter-visual reveal"><img src="assets/slides/slide13.png" alt="Chapter 02 Prediction task"></div>
+
+      <div class="slides-stack">
+        <figure class="slide-card reveal"><img src="assets/slides/slide14.png" alt="ARDS definition"><figcaption><span>02 · Prediction</span><strong>ARDS란 무엇인가</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide15.png" alt="Why NPS-ARDS"><figcaption><span>02 · Prediction</span><strong>Why NPS-ARDS?</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide16.png" alt="ARDS diagnostic criteria"><figcaption><span>02 · Prediction</span><strong>Berlin Criteria의 데이터 적용</strong></figcaption></figure>
+      </div>
+
+      <div class="logic-strip reveal">
+        <div><span>Oxygenation</span><strong>0 &lt; PF Ratio ≤ 300</strong></div>
+        <div class="plus">+</div>
+        <div><span>Respiratory Support</span><strong>MechVent = 1</strong></div>
+        <div class="arrow">→</div>
+        <div class="target"><span>Prediction Target</span><strong>ARDS within 12h</strong></div>
+      </div>
+    </section>
+
+    <section id="labeling" class="section-shell story-section">
+      <div class="chapter reveal">
+        <span class="chapter-no">03</span>
+        <div>
+          <p>Annotation & Labeling</p>
+          <h2>미래를 예측하는 라벨 만들기</h2>
+        </div>
+        <p class="chapter-copy">현재 시점에서 향후 12시간 내 ARDS 조건 충족 여부를 라벨링하고, 미래 정보가 학습에 새어 들어가지 않도록 데이터를 정리합니다.</p>
+      </div>
+
+      <div class="chapter-visual reveal"><img src="assets/slides/slide17.png" alt="Chapter 03 Annotation and Labeling"></div>
+
+      <div class="slides-stack">
+        <figure class="slide-card reveal"><img src="assets/slides/slide18.png" alt="ARDS labeling logic"><figcaption><span>03 · Labeling</span><strong>PF Ratio 기반 라벨링 로직</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide19.png" alt="PF ratio zero justification"><figcaption><span>03 · Labeling</span><strong>FiO2 결측치로 인한 오분류 방지</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide20.png" alt="12 hour future label"><figcaption><span>03 · Labeling</span><strong>ards_next_12h 라벨 생성</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide21.png" alt="Future window trimming"><figcaption><span>03 · Labeling</span><strong>Future Window Trimming</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide22.png" alt="Data leakage prevention"><figcaption><span>03 · Labeling</span><strong>학습에 불필요한 생성 컬럼 제거</strong></figcaption></figure>
+      </div>
+    </section>
+
+    <section id="modeling" class="section-shell story-section alt-bg">
+      <div class="chapter reveal">
+        <span class="chapter-no">04</span>
+        <div>
+          <p>Model Design & Training</p>
+          <h2>정적 모델과 시계열 모델 비교</h2>
+        </div>
+        <p class="chapter-copy">6개 머신러닝 모델과 LSTM·Transformer를 동일한 데이터 분할과 정규화 흐름에서 비교합니다.</p>
+      </div>
+
+      <div class="chapter-visual reveal"><img src="assets/slides/slide23.png" alt="Chapter 04 Model design and training"></div>
+
+      <div class="model-grid reveal">
+        <div class="model-card">
+          <span class="model-label">Machine Learning</span>
+          <h3>XGB · LGB · RF<br>DT · LR · NB</h3>
+          <p>Train/Valid/Test split → 변수 제외 → Min-Max scaling → 학습</p>
+        </div>
+        <div class="model-card dark">
+          <span class="model-label">Deep Learning</span>
+          <h3>LSTM<br>Transformer</h3>
+          <p>동일 전처리 후 Tensor 변환을 거쳐 시계열 패턴 학습</p>
+        </div>
+      </div>
+
+      <div class="slides-stack">
+        <figure class="slide-card reveal"><img src="assets/slides/slide24.png" alt="Machine learning models"><figcaption><span>04 · Modeling</span><strong>Machine Learning Pipeline</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide25.png" alt="Deep learning models"><figcaption><span>04 · Modeling</span><strong>Deep Learning Pipeline</strong></figcaption></figure>
+      </div>
+    </section>
+
+    <section id="results" class="section-shell story-section">
+      <div class="chapter reveal">
+        <span class="chapter-no">05</span>
+        <div>
+          <p>Performance & Conclusion</p>
+          <h2>성능 비교와 임상적 의미</h2>
+        </div>
+        <p class="chapter-copy">프로젝트 결과에서는 LSTM이 가장 높은 F1-Score를, Transformer가 가장 높은 ROC-AUC를 기록했습니다.</p>
+      </div>
+
+      <div class="chapter-visual reveal"><img src="assets/slides/slide26.png" alt="Chapter 05 Performance comparison and conclusion"></div>
+
+      <div class="result-hero reveal">
+        <div class="result-stat">
+          <span>Best F1-Score</span>
+          <strong>0.867</strong>
+          <em>LSTM</em>
+        </div>
+        <div class="result-divider"></div>
+        <div class="result-stat">
+          <span>Best ROC-AUC</span>
+          <strong>0.949</strong>
+          <em>Transformer</em>
+        </div>
+        <p>발표자료의 성능 비교 결과 기준</p>
+      </div>
+
+      <div class="slides-stack">
+        <figure class="slide-card reveal"><img src="assets/slides/slide27.png" alt="Machine learning result metric definitions"><figcaption><span>05 · Results</span><strong>평가 지표와 cutoff trade-off</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide28.png" alt="Machine learning result curves"><figcaption><span>05 · Results</span><strong>모델별 cutoff 성능 비교 I</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide29.png" alt="Machine learning result curves second"><figcaption><span>05 · Results</span><strong>모델별 cutoff 성능 비교 II</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide30.png" alt="ROC curves"><figcaption><span>05 · Results</span><strong>ROC Curve 비교</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide31.png" alt="Performance result summary"><figcaption><span>05 · Results</span><strong>핵심 성능 지표 해석</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide32.png" alt="Performance detailed analysis"><figcaption><span>05 · Results</span><strong>ML vs DL 성능 상세</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide33.png" alt="Performance graph"><figcaption><span>05 · Results</span><strong>AUROC · AUPRC 비교</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide34.png" alt="Conclusion and clinical significance"><figcaption><span>05 · Conclusion</span><strong>12시간 조기 위험 탐지의 임상적 활용 가능성</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide35.png" alt="Missing value imputation implications"><figcaption><span>05 · Implications</span><strong>후속 개선: Missing Value Imputation</strong></figcaption></figure>
+      </div>
+    </section>
+
+    <section class="closing">
+      <div class="closing-copy reveal">
+        <span>PROJECT SUMMARY</span>
+        <h2>시계열 바이오신호에서<br>ARDS 위험을 더 일찍 포착하기</h2>
+        <p>코호트 선정 · 임상기준 라벨링 · 시계열 모델링 · ML/DL 성능 비교를 하나의 파이프라인으로 구현한 프로젝트입니다.</p>
+      </div>
+      <div class="closing-slide reveal delay-1"><img src="assets/slides/slide37.png" alt="Thank you"></div>
+    </section>
+
+    <section class="appendix section-shell">
+      <details>
+        <summary>References 보기 <span>+</span></summary>
+        <figure class="slide-card compact"><img src="assets/slides/slide36.png" alt="References"><figcaption><span>Appendix</span><strong>References</strong></figcaption></figure>
+      </details>
+    </section>
+  </main>
+
+  <footer>
+    <p>ARDS Prediction Model · IMEN 383</p>
+    <a href="#top">Back to top ↑</a>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
