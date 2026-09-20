@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f0e3">
+  <meta name="description" content="MIMIC-IV ICU 시계열 데이터를 활용한 12시간 전 ARDS 발생 예측 프로젝트">
+  <title>ARDS Prediction Model</title>
+  <link rel="preload" as="image" href="assets/slides/slide01.png">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .slide-note{
+      padding:20px 24px 23px;
+      border-top:1px solid rgba(120,110,82,.16);
+      background:linear-gradient(180deg,#fbfaf6 0%,#f7f3e8 100%);
+    }
+    .slide-note-label{
+      display:inline-block;
+      margin-bottom:8px;
+      color:#9b8650;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.11em;
+      text-transform:uppercase;
+    }
+    .slide-note p{
+      margin:0;
+      color:#56564f;
+      font-size:14px;
+      line-height:1.75;
+      word-break:keep-all;
+    }
+    .slide-note strong{
+      color:#303129;
+      font-weight:800;
+    }
+    .slide-note + .slide-note{
+      border-top:0;
+      padding-top:0;
+    }
+    @media(max-width:900px){
+      .slide-note{
+        padding:16px 16px 18px;
+      }
+      .slide-note p{
+        font-size:13px;
+        line-height:1.7;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"><span id="progressFill"></span></div>
+
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="처음으로 이동">
+      <span class="brand-mark">+</span>
+      <span>HEALTH SYSTEMS ENGINEERING</span>
+    </a>
+    <nav class="chapter-nav" aria-label="프로젝트 섹션">
+      <a href="#preprocessing">Preprocessing</a>
+      <a href="#prediction">Prediction</a>
+      <a href="#labeling">Labeling</a>
+      <a href="#modeling">Modeling</a>
+      <a href="#results">Results</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-orb orb-a"></div>
+      <div class="hero-orb orb-b"></div>
+
+      <div class="hero-copy reveal">
+        <p class="eyebrow">IMEN 383 · Health Systems Engineering</p>
+        <h1>ARDS<br>Prediction Model</h1>
+        <p class="hero-sub">ICU 시계열 데이터를 기반으로 ARDS 발생을 12시간 전에 예측하는 머신러닝·딥러닝 프로젝트</p>
+        <div class="hero-metrics" aria-label="프로젝트 핵심 수치">
+          <div><strong>11,514</strong><span>cohort</span></div>
+          <div><strong>12h</strong><span>prediction window</span></div>
+          <div><strong>8</strong><span>models compared</span></div>
+        </div>
+        <a class="scroll-cta" href="#overview">프로젝트 보기 <span>↓</span></a>
+      </div>
+
+      <div class="hero-deck reveal delay-1">
+        <img src="assets/slides/slide01.png" alt="ARDS Prediction Model 발표자료 표지" fetchpriority="high">
+      </div>
+    </section>
+
+    <section id="overview" class="section-shell overview">
+      <div class="section-intro reveal">
+        <span class="section-index">00</span>
+        <div>
+          <p class="kicker">Overview</p>
+          <h2>의료 시계열 데이터에서<br>12시간 뒤 위험을<br>읽어내는 과정</h2>
+        </div>
+        <p class="section-copy">데이터 정제부터 임상 기준을 반영한 라벨링, ML·DL 모델 비교, 성능 해석까지 하나의 흐름으로 구성했습니다.</p>
+      </div>
+
+      <figure class="slide-card feature reveal">
+        <img src="assets/slides/slide02.png" alt="ARDS Prediction Model 프로젝트 목차">
+        <figcaption><span>Contents</span><strong>Preprocessing → Prediction → Labeling → Modeling → Performance</strong></figcaption>
+      </figure>
+    </section>
+
+    <section id="preprocessing" class="section-shell story-section">
+      <div class="chapter reveal">
+        <span class="chapter-no">01</span>
+        <div>
+          <p>Preprocessing</p>
+          <h2>분석 가능한<br>ICU 시계열 만들기</h2>
+        </div>
+        <p class="chapter-copy">11,514명의 코호트를 정의하고, 이상치와 결측치를 임상·도메인 기준에 맞춰 정제합니다.</p>
+      </div>
+
+      <div class="chapter-visual reveal"><img src="assets/slides/slide03.png" alt="Chapter 01 Preprocessing"></div>
+
+      <div class="slides-stack">
+        <figure class="slide-card reveal"><img src="assets/slides/slide04.png" alt="Cohort selection and data characteristics"><figcaption><span>01 · Preprocessing</span><strong>Cohort Selection & Data Characteristics</strong></figcaption><div class="slide-note"><span class="slide-note-label">COHORT DESIGN</span><p><strong>왜 LOS ≥ 2일인가?</strong> 초기 ARDS 패턴을 학습하려면 최소 48시간의 관찰 구간이 필요하기 때문입니다. 또한 발표자료에서 정의한 <strong>Train 80% / Valid 10% / Test 10%</strong> 분할을 그대로 유지해 모델의 일반화 성능을 평가하도록 했습니다.</p></div></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide05.png" alt="Released dataframe analysis"><figcaption><span>01 · Preprocessing</span><strong>Released DF 구조와 변수 분포 확인</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide06.png" alt="Static and time variables"><figcaption><span>01 · Preprocessing</span><strong>Static Variable vs Time-Variable</strong></figcaption><div class="slide-note"><span class="slide-note-label">DATA STRUCTURE</span><p><strong>정적 변수</strong>는 Age, Gender, ICUType, Height, Weight처럼 한 입원 내에서 거의 변하지 않는 정보이고, <strong>시계열 변수</strong>는 Albumin, RespRate처럼 시간에 따라 반복 측정되는 정보입니다. 두 종류를 구분해야 이후 결측치 처리와 정규화, 시계열 모델 입력 구성을 다르게 설계할 수 있습니다.</p></div></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide07.png" alt="Static variables analysis"><figcaption><span>01 · Preprocessing</span><strong>정적 변수 분포 분석</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide08.png" alt="Dynamic variables frequency"><figcaption><span>01 · Preprocessing</span><strong>시계열 변수 측정 빈도 분석</strong></figcaption><div class="slide-note"><span class="slide-note-label">TIME-SERIES CHARACTERISTIC</span><p>동적 변수는 모든 시점에 동일한 빈도로 측정되지 않습니다. 슬라이드의 빈도 분포는 변수마다 관측 간격이 다르다는 점을 보여주며, 이 때문에 이후 <strong>결측치 보정</strong>과 시간 순서를 고려한 모델링이 핵심 전처리 단계가 됩니다.</p></div></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide09.png" alt="Outlier detection criteria"><figcaption><span>01 · Preprocessing</span><strong>도메인 지식 기반 이상치 기준</strong></figcaption><div class="slide-note"><span class="slide-note-label">OUTLIER CRITERIA</span><p>이상치 기준은 단순한 통계적 범위가 아니라 <strong>MIMIC-Extract의 변수별 생리학적 범위</strong>를 참고해 설정했습니다. 즉, 실제 환자에게서 나타날 수 있는 극단값까지 제거하지 않고, 생리적으로 불가능한 값에 집중해 정제하는 접근입니다.</p></div></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide10.png" alt="Physiologically impossible values"><figcaption><span>01 · Preprocessing</span><strong>Physiologically Impossible Values</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide11.png" alt="Outlier removal comparison"><figcaption><span>01 · Preprocessing</span><strong>표준편차 기준 대신 도메인 기준 채택</strong></figcaption><div class="slide-note"><span class="slide-note-label">WHY DOMAIN-BASED?</span><p>도메인 기준으로 제거된 행은 <strong>661개(0.013%)</strong>였던 반면, 표준편차 기준은 훨씬 많은 값을 제거했습니다. 발표에서는 이 차이를 근거로, 중환자 데이터의 실제 극단값을 과도하게 삭제하지 않기 위해 <strong>도메인 기준</strong>을 채택했습니다.</p></div></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide12.png" alt="Missing value imputation"><figcaption><span>01 · Preprocessing</span><strong>Missing Value Imputation</strong></figcaption><div class="slide-note"><span class="slide-note-label">MISSING VALUE STRATEGY</span><p>발표자료의 처리 원칙은 변수 특성에 따라 다릅니다. <strong>binary 변수와 보간이 어려운 Height는 NaN을 0으로 처리</strong>하고, 그 외 시계열 변수는 앞선 관측값을 이어받는 방식으로 채운 뒤 남은 값은 0으로 보정했습니다.</p></div></figure>
+      </div>
+    </section>
+
+    <section id="prediction" class="section-shell story-section alt-bg">
+      <div class="chapter reveal">
+        <span class="chapter-no">02</span>
+        <div>
+          <p>Prediction Task</p>
+          <h2>무엇을,<br>왜 예측할 것인가</h2>
+        </div>
+        <p class="chapter-copy">ARDS의 임상적 의미와 예측 필요성을 정리하고, Berlin Criteria를 데이터셋에서 사용할 수 있는 수치 조건으로 변환합니다.</p>
+      </div>
+
+      <div class="chapter-visual reveal"><img src="assets/slides/slide13.png" alt="Chapter 02 Prediction task"></div>
+
+      <div class="slides-stack">
+        <figure class="slide-card reveal"><img src="assets/slides/slide14.png" alt="ARDS definition"><figcaption><span>02 · Prediction</span><strong>ARDS란 무엇인가</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide15.png" alt="Why NPS-ARDS"><figcaption><span>02 · Prediction</span><strong>Why NPS-ARDS?</strong></figcaption><div class="slide-note"><span class="slide-note-label">PREDICTION MOTIVATION</span><p>발표자료에서는 NPS-ARDS 환자군에서 <strong>더 높은 사망률과 더 긴 ICU 재원기간</strong>이 관찰된다는 선행연구를 제시합니다. 또한 증상이 직접적이지 않을 수 있어, 초기 시계열 데이터에서 위험을 조기에 포착하는 것이 중요한 예측 과제로 설정되었습니다.</p></div></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide16.png" alt="ARDS diagnostic criteria"><figcaption><span>02 · Prediction</span><strong>Berlin Criteria의 데이터 적용</strong></figcaption><div class="slide-note"><span class="slide-note-label">CLINICAL CRITERIA → DATA RULE</span><p>Berlin Criteria를 그대로 사용할 수 없는 데이터 제약을 고려해, 산소화 기준은 <strong>0 &lt; PF Ratio ≤ 300</strong>, 호흡 보조 조건은 <strong>MechVent = 1</strong>로 수치화했습니다. MechVent는 데이터셋에서 PEEP 정보를 직접 쓰기 어려운 상황에서 호흡 보조 여부를 판단하기 위한 대체 기준으로 사용했습니다.</p></div></figure>
+      </div>
+
+      <div class="logic-strip reveal">
+        <div><span>Oxygenation</span><strong>0 &lt; PF Ratio ≤ 300</strong></div>
+        <div class="plus">+</div>
+        <div><span>Respiratory Support</span><strong>MechVent = 1</strong></div>
+        <div class="arrow">→</div>
+        <div class="target"><span>Prediction Target</span><strong>ARDS within 12h</strong></div>
+      </div>
+    </section>
+
+    <section id="labeling" class="section-shell story-section">
+      <div class="chapter reveal">
+        <span class="chapter-no">03</span>
+        <div>
+          <p>Annotation & Labeling</p>
+          <h2>미래를 예측하는<br>라벨 만들기</h2>
+        </div>
+        <p class="chapter-copy">현재 시점에서 향후 12시간 내 ARDS 조건 충족 여부를 라벨링하고, 미래 정보가 학습에 새어 들어가지 않도록 데이터를 정리합니다.</p>
+      </div>
+
+      <div class="chapter-visual reveal"><img src="assets/slides/slide17.png" alt="Chapter 03 Annotation and Labeling"></div>
+
+      <div class="slides-stack">
+        <figure class="slide-card reveal"><img src="assets/slides/slide18.png" alt="ARDS labeling logic"><figcaption><span>03 · Labeling</span><strong>PF Ratio 기반 라벨링 로직</strong></figcaption><div class="slide-note"><span class="slide-note-label">LABEL DEFINITION</span><p>라벨의 핵심은 <strong>PaO2 / FiO2</strong>로 계산한 PF Ratio와 기계환기 여부를 동시에 사용하는 것입니다. 현재 시점의 관측값을 이용해 임상적으로 정의한 ARDS 조건을 데이터 라벨로 변환하는 단계입니다.</p></div></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide19.png" alt="PF ratio zero justification"><figcaption><span>03 · Labeling</span><strong>FiO2 결측치로 인한 오분류 방지</strong></figcaption><div class="slide-note"><span class="slide-note-label">EDGE-CASE HANDLING</span><p>전처리 과정에서 FiO2 결측치가 0으로 대체되면 PF Ratio 계산 시 0으로 나누는 문제가 발생할 수 있습니다. 이를 막기 위해 PF Ratio가 유효한 양수인 경우만 인정해 <strong>0 &lt; PF Ratio ≤ 300</strong> 조건을 적용했습니다.</p></div></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide20.png" alt="12 hour future label"><figcaption><span>03 · Labeling</span><strong>ards_next_12h 라벨 생성</strong></figcaption><div class="slide-note"><span class="slide-note-label">FUTURE PREDICTION LABEL</span><p>이 프로젝트가 예측하려는 것은 현재 ARDS 여부가 아니라 <strong>현재 시점 이후 12시간 안에 ARDS 조건을 한 번이라도 충족하는지</strong>입니다. 따라서 각 시점에 대해 미래 12시간을 확인해 `ards_next_12h` 라벨을 생성했습니다.</p></div></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide21.png" alt="Future window trimming"><figcaption><span>03 · Labeling</span><strong>Future Window Trimming</strong></figcaption><div class="slide-note"><span class="slide-note-label">LEAKAGE PREVENTION</span><p>환자 시계열의 마지막 구간은 이후 12시간의 관측값이 충분하지 않아 미래 라벨을 확정할 수 없습니다. 발표자료에서는 이 문제를 피하기 위해 <strong>마지막 두 개의 예측 불가능한 timestamp를 제거</strong>했습니다.</p></div></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide22.png" alt="Data leakage prevention"><figcaption><span>03 · Labeling</span><strong>학습에 불필요한 생성 컬럼 제거</strong></figcaption><div class="slide-note"><span class="slide-note-label">LEAKAGE PREVENTION</span><p>라벨링 과정에서 새로 만든 PF Ratio 등 보조 컬럼이 그대로 모델 입력에 남으면 정답 정보를 간접적으로 제공할 수 있습니다. 따라서 모델 학습에 쓰지 않을 생성 컬럼을 제거해 <strong>데이터 누수 가능성을 차단</strong>했습니다.</p></div></figure>
+      </div>
+    </section>
+
+    <section id="modeling" class="section-shell story-section alt-bg">
+      <div class="chapter reveal">
+        <span class="chapter-no">04</span>
+        <div>
+          <p>Model Design & Training</p>
+          <h2>정적 모델과<br>시계열 모델 비교</h2>
+        </div>
+        <p class="chapter-copy">6개 머신러닝 모델과 LSTM·Transformer를 동일한 데이터 분할과 정규화 흐름에서 비교합니다.</p>
+      </div>
+
+      <div class="chapter-visual reveal"><img src="assets/slides/slide23.png" alt="Chapter 04 Model design and training"></div>
+
+      <div class="model-grid reveal">
+        <div class="model-card">
+          <span class="model-label">Machine Learning</span>
+          <h3>XGB · LGB · RF<br>DT · LR · NB</h3>
+          <p>Train/Valid/Test split → 변수 제외 → Min-Max scaling → 학습</p>
+        </div>
+        <div class="model-card dark">
+          <span class="model-label">Deep Learning</span>
+          <h3>LSTM<br>Transformer</h3>
+          <p>동일 전처리 후 Tensor 변환을 거쳐 시계열 패턴 학습</p>
+        </div>
+      </div>
+
+      <div class="slides-stack">
+        <figure class="slide-card reveal"><img src="assets/slides/slide24.png" alt="Machine learning models"><figcaption><span>04 · Modeling</span><strong>Machine Learning Pipeline</strong></figcaption><div class="slide-note"><span class="slide-note-label">FAIR MODEL COMPARISON</span><p>XGB, LGB, RF, DT, LR, NB는 동일한 `split_stay_id.json` 분할을 사용했습니다. 특히 선형 계열 모델 학습을 위해 이산·binary·static 변수를 제외한 뒤 <strong>Min-Max scaling</strong>을 적용해 비교 조건을 맞췄습니다.</p></div></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide25.png" alt="Deep learning models"><figcaption><span>04 · Modeling</span><strong>Deep Learning Pipeline</strong></figcaption><div class="slide-note"><span class="slide-note-label">SEQUENCE MODEL INPUT</span><p>LSTM과 Transformer도 동일한 Train/Valid/Test 분할과 정규화 원칙을 사용했습니다. 차이는 전처리된 시계열 데이터를 <strong>Tensor 형태로 변환</strong>해 시간 순서의 패턴을 학습하도록 구성했다는 점입니다.</p></div></figure>
+      </div>
+    </section>
+
+    <section id="results" class="section-shell story-section">
+      <div class="chapter reveal">
+        <span class="chapter-no">05</span>
+        <div>
+          <p>Performance & Conclusion</p>
+          <h2>성능 비교와 임상적 의미</h2>
+        </div>
+        <p class="chapter-copy">프로젝트 결과에서는 LSTM이 가장 높은 F1-Score를, Transformer가 가장 높은 ROC-AUC를 기록했습니다.</p>
+      </div>
+
+      <div class="chapter-visual reveal"><img src="assets/slides/slide26.png" alt="Chapter 05 Performance comparison and conclusion"></div>
+
+      <div class="result-hero reveal">
+        <div class="result-stat">
+          <span>Best F1-Score</span>
+          <strong>0.867</strong>
+          <em>LSTM</em>
+        </div>
+        <div class="result-divider"></div>
+        <div class="result-stat">
+          <span>Best ROC-AUC</span>
+          <strong>0.949</strong>
+          <em>Transformer</em>
+        </div>
+        <p>발표자료의 성능 비교 결과 기준</p>
+      </div>
+
+      <div class="slides-stack">
+        <figure class="slide-card reveal"><img src="assets/slides/slide27.png" alt="Machine learning result metric definitions"><figcaption><span>05 · Results</span><strong>평가 지표와 cutoff trade-off</strong></figcaption><div class="slide-note"><span class="slide-note-label">METRIC GUIDE</span><p><strong>TPR(Recall)</strong>은 실제 양성을 얼마나 놓치지 않는지, <strong>PPV(Precision)</strong>은 양성 예측의 정확성을, <strong>F1</strong>은 두 지표의 균형을, <strong>TNR(Specificity)</strong>은 실제 음성을 얼마나 잘 구분하는지를 보여줍니다. 슬라이드는 cutoff에 따라 이 지표들이 서로 달라지는 관계를 비교합니다.</p></div></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide28.png" alt="Machine learning result curves"><figcaption><span>05 · Results</span><strong>모델별 cutoff 성능 비교 I</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide29.png" alt="Machine learning result curves second"><figcaption><span>05 · Results</span><strong>모델별 cutoff 성능 비교 II</strong></figcaption></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide30.png" alt="ROC curves"><figcaption><span>05 · Results</span><strong>ROC Curve 비교</strong></figcaption><div class="slide-note"><span class="slide-note-label">ROC-AUC INTERPRETATION</span><p>ROC 곡선은 cutoff 전 구간에서 모델의 민감도와 오탐률 변화를 비교하기 위한 그래프입니다. 발표자료는 이 곡선의 면적인 <strong>ROC-AUC</strong>를 모델 간 전반적인 분류 성능 비교 지표로 사용했습니다.</p></div></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide31.png" alt="Performance result summary"><figcaption><span>05 · Results</span><strong>핵심 성능 지표 해석</strong></figcaption><div class="slide-note"><span class="slide-note-label">KEY RESULT</span><p>발표자료 기준으로 <strong>LSTM의 F1-Score가 0.867로 가장 높아</strong> precision과 recall의 균형이 가장 좋았습니다. 반면 <strong>Transformer는 ROC-AUC 0.949로 가장 높았고</strong>, LSTM도 0.941로 유사한 수준의 예측력을 보였습니다.</p></div></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide32.png" alt="Performance detailed analysis"><figcaption><span>05 · Results</span><strong>ML vs DL 성능 상세</strong></figcaption><div class="slide-note"><span class="slide-note-label">WHY LSTM?</span><p>세부 결과에서도 LSTM은 높은 Recall과 Precision을 동시에 확보해 F1-Score가 높게 나타났습니다. 즉, 단순히 한 지표만 높은 모델보다 <strong>양성 환자를 놓치지 않으면서 예측의 정확성도 유지한 균형</strong>이 강점으로 제시됩니다.</p></div></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide33.png" alt="Performance graph"><figcaption><span>05 · Results</span><strong>AUROC · AUPRC 비교</strong></figcaption><div class="slide-note"><span class="slide-note-label">MODEL COMPARISON</span><p>AUROC와 AUPRC를 함께 보면 모델의 성능을 서로 다른 관점에서 비교할 수 있습니다. 발표자료에서는 Transformer가 가장 높은 AUROC를, LSTM이 높은 F1-Score를 기록해 <strong>시계열 딥러닝 모델의 경쟁력</strong>을 확인했습니다.</p></div></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide34.png" alt="Conclusion and clinical significance"><figcaption><span>05 · Conclusion</span><strong>12시간 조기 위험 탐지의 임상적 활용 가능성</strong></figcaption><div class="slide-note"><span class="slide-note-label">CLINICAL SIGNIFICANCE</span><p>프로젝트의 핵심 의미는 <strong>ARDS 발생 12시간 전에 고위험 환자를 선별</strong>하는 데 있습니다. 발표자료에서는 이를 통해 인공호흡기 적용이나 수액 조절 같은 선제적 대응과, 의료 인력·장비의 효율적 배분 가능성을 제시했습니다.</p></div></figure>
+        <figure class="slide-card reveal"><img src="assets/slides/slide35.png" alt="Missing value imputation implications"><figcaption><span>05 · Implications</span><strong>후속 개선: Missing Value Imputation</strong></figcaption><div class="slide-note"><span class="slide-note-label">LIMITATION & NEXT STEP</span><p>발표자료에서는 결측치 처리 방식이 scaling 결과를 왜곡할 수 있다는 점을 후속 개선 과제로 제시했습니다. 특히 Height는 분포와 이상치에 더 강건하도록 <strong>성별 중앙값 대체</strong>를 적용하는 방향을 제안했습니다.</p></div></figure>
+      </div>
+    </section>
+
+    <section class="closing">
+      <div class="closing-copy reveal">
+        <span>PROJECT SUMMARY</span>
+        <h2>시계열 바이오신호에서<br>ARDS 위험을<br>더 일찍 포착하기</h2>
+        <p>코호트 선정 · 임상기준 라벨링 · 시계열 모델링 · ML/DL 성능 비교를 하나의 파이프라인으로 구현한 프로젝트입니다.</p>
+      </div>
+      <div class="closing-slide reveal delay-1"><img src="assets/slides/slide37.png" alt="Thank you"></div>
+    </section>
+
+    <section class="appendix section-shell">
+      <details>
+        <summary>References 보기 <span>+</span></summary>
+        <figure class="slide-card compact"><img src="assets/slides/slide36.png" alt="References"><figcaption><span>Appendix</span><strong>References</strong></figcaption></figure>
+      </details>
+    </section>
+  </main>
+
+  <footer>
+    <p>ARDS Prediction Model · IMEN 383</p>
+    <a href="#top">Back to top ↑</a>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
